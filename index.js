@@ -2,40 +2,39 @@
 
 import { BehaviorSubject } from 'rxjs';
 
-// Local storage
-var initialLocalState = {
+var localState = {
     masterData: {}
 }
 
-// Session storage
-var initialSessionState = {
+var sessionState = {
     default: {}
 }
 
-var localState = new BehaviorSubject < any > (this.initialLocalState); // Local storage
-var sessionState = new BehaviorSubject < any > (this.initialSessionState); // Session storage
+var localStateManager = new BehaviorSubject(localState); // Local storage
+var sessionStateManager = new BehaviorSubject(sessionState); // Session storage
 
-// Browser local storage
-module.exports = function localStateManager() {
-    if (localStorage.hasOwnProperty('localState')) {
-        this.localState.next(JSON.parse(localStorage.getItem('localState')));
-    }
-    this.localState.subscribe(updatedData => {
-        this.localState = updatedData;
-        localStorage.setItem('localState', JSON.stringify(this.localState));
-    })
+if (localStorage.hasOwnProperty('localState')) {
+    localStateManager.next(JSON.parse(localStorage.getItem('localState')));
 }
-//  Browser session storage
-module.exports = function sessionStateManager() {
-    if (sessionStorage.hasOwnProperty('sessionState')) {
-        this.sessionState.next(JSON.parse(sessionStorage.getItem('sessionState')));
-    }
+localStateManager.subscribe(updatedData => {
+    localState = updatedData;
+    localStorage.setItem('localState', JSON.stringify(localState));
+})
 
-    this.sessionState.subscribe(updatedState => {
-        this.sessionState = updatedState;
-        sessionStorage.setItem('sessionState', JSON.stringify(this.sessionState));
-    })
+if (sessionStorage.hasOwnProperty('sessionState')) {
+    sessionStateManager.next(JSON.parse(sessionStorage.getItem('sessionState')));
 }
 
+sessionStateManager.subscribe(updatedState => {
+    sessionState = updatedState;
+    sessionStorage.setItem('sessionState', JSON.stringify(sessionState));
+})
 
+module.exports = localState;
+module.exports = sessionState;
 
+module.exports = localStateManager;
+module.exports = sessionStateManager;
+
+localState.next(initialLocalState.test = 'hello');
+localStateManager()

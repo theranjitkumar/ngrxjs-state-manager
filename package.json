@@ -11,5 +11,6 @@
   "dependencies": {
     "@angular/core": "^13.1.0",
     "rxjs": "^7.4.0"
-  }
+  },
+  "type": "module"
 }
